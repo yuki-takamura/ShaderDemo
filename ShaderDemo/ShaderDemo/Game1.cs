@@ -21,13 +21,8 @@ namespace ShaderDemo
         Effect effect;
 
         Matrix world = Matrix.CreateTranslation(0, 0, 0);
-        Matrix view = Matrix.CreateLookAt(new Vector3(0, 0, 10), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-        Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 600f, 0.1f, 100f);
 
-        Vector3 viewVector;
-
-        float angle = 0;
-        float distance = 5;
+        MainCamera mainCamera;
 
         Model model;
         Texture2D texture;
@@ -42,6 +37,9 @@ namespace ShaderDemo
         protected override void Initialize()
         {
             InputManager.Initialize();
+            mainCamera = new MainCamera();
+            mainCamera.Initialize();
+
             base.Initialize();
         }
 
@@ -71,23 +69,7 @@ namespace ShaderDemo
                 this.Exit();
             }
 
-            if (InputManager.IsKeyDown(Keys.Up))
-            {
-                distance -= 0.1f;
-            }
-
-            if (InputManager.IsKeyDown(Keys.Down))
-            {
-                distance += 0.1f;
-            }
-
-            angle += 0.01f;
-
-            Vector3 cameraLocation = distance * new Vector3((float)Math.Sin(angle), 0, (float)Math.Cos(angle));
-            Vector3 cameraTarget = new Vector3(0, 0, 0);
-            viewVector = Vector3.Transform(cameraTarget - cameraLocation, Matrix.CreateRotationY(0));
-            viewVector.Normalize();
-            view = Matrix.CreateLookAt(cameraLocation, cameraTarget, new Vector3(0, 1, 0));
+            mainCamera.Update();
 
             base.Update(gameTime);
         }
@@ -95,7 +77,7 @@ namespace ShaderDemo
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            DrawModelWithEffect(model, world, view, projection);
+            DrawModelWithEffect(model, world, mainCamera.Camera.View, mainCamera.Camera.Projection);
 
             base.Draw(gameTime);
         }
@@ -126,7 +108,7 @@ namespace ShaderDemo
                     effect.Parameters["World"].SetValue(world * mesh.ParentBone.Transform);
                     effect.Parameters["View"].SetValue(view);
                     effect.Parameters["Projection"].SetValue(projection);
-                    effect.Parameters["ViewVector"].SetValue(viewVector);
+                    effect.Parameters["ViewVector"].SetValue(mainCamera.Camera.ViewVector);
 
                     Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
                     effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);

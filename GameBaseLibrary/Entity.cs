@@ -13,7 +13,7 @@ namespace GameBaseLibrary
 {
     public class Entity
     {
-        Entity()
+        public Entity()
         {
         }
 
