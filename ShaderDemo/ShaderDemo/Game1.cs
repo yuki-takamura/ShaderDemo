@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using GameBaseLibrary;
 
 namespace ShaderDemo
 {
@@ -18,15 +19,9 @@ namespace ShaderDemo
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Effect effect;
-
-        Matrix world = Matrix.CreateTranslation(0, 0, 0);
 
         MainCamera mainCamera;
-
-        Model model;
-        Texture2D texture;
-        Texture2D normalMap;
+        ModelObject sphere;
 
         public Game1()
         {
@@ -40,6 +35,8 @@ namespace ShaderDemo
             mainCamera = new MainCamera();
             mainCamera.Initialize();
 
+            sphere = new ModelObject();
+
             base.Initialize();
         }
 
@@ -47,10 +44,13 @@ namespace ShaderDemo
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            model = Content.Load<Model>("Sphere");
-            effect = Content.Load<Effect>("Diffuse");
-            texture = Content.Load<Texture2D>("DiffuseMap");
-            normalMap = Content.Load<Texture2D>("NormalMap");
+            Model model = Content.Load<Model>("Sphere");
+            Effect effect = Content.Load<Effect>("Diffuse");
+            List<Texture2D> textures = new List<Texture2D>();
+            textures.Add(Content.Load<Texture2D>("DiffuseMap"));
+            textures.Add(Content.Load<Texture2D>("NormalMap"));
+
+            sphere.Initialize(model, effect, textures);
         }
 
         protected override void UnloadContent()
@@ -77,47 +77,9 @@ namespace ShaderDemo
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            DrawModelWithEffect(model, world, mainCamera.Camera.View, mainCamera.Camera.Projection);
+            sphere.Draw(mainCamera.Camera);
 
             base.Draw(gameTime);
-        }
-
-        private void DrawModel(Model model, Matrix world, Matrix view, Matrix projection)
-        {
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
-                    effect.World = world * mesh.ParentBone.Transform;
-                    effect.View = view;
-                    effect.Projection = projection;
-                }
-                mesh.Draw();
-            }
-        }
-
-        private void DrawModelWithEffect(Model model, Matrix world, Matrix view, Matrix projection)
-        {
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (ModelMeshPart part in mesh.MeshParts)
-                {
-                    part.Effect = effect;
-                    effect.Parameters["World"].SetValue(world * mesh.ParentBone.Transform);
-                    effect.Parameters["View"].SetValue(view);
-                    effect.Parameters["Projection"].SetValue(projection);
-                    effect.Parameters["ViewVector"].SetValue(mainCamera.Camera.ViewVector);
-
-                    Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(mesh.ParentBone.Transform * world));
-                    effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
-
-                    effect.Parameters["ModelTexture"].SetValue(texture);
-                    effect.Parameters["NormalMap"].SetValue(normalMap);
-                }
-                mesh.Draw();
-            }
         }
     }
 }

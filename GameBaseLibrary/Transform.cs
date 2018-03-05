@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace GameBaseLibrary
 {
@@ -9,7 +6,20 @@ namespace GameBaseLibrary
     {
         public Vector3 position = Vector3.Zero;
         public Vector3 rotation = Vector3.Zero;
-        public Vector3 scale = Vector3.Zero;
+        public Vector3 scale = Vector3.One;
+
+        public Matrix World
+        {
+            get
+            {
+                return Matrix.CreateTranslation(position)
+                    * Matrix.CreateRotationX(rotation.X)
+                    * Matrix.CreateRotationY(rotation.Y)
+                    * Matrix.CreateRotationZ(rotation.Z)
+                    * Matrix.CreateScale(scale);
+            }
+            set { }
+        }
 
         public Transform()
         {

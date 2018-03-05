@@ -95,6 +95,8 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="ModelObject.cs" />
+    <Compile Include="TextureMap.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshRender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

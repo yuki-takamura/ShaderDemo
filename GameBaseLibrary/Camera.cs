@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace GameBaseLibrary
 {
@@ -25,15 +22,18 @@ namespace GameBaseLibrary
 
         public void Initialize(Vector3 position)
         {
+            base.Initialize();
+
             Update(position);
         }
 
         public void Update(Vector3 position)
         {
+            base.Update();
+
             ViewVector = Vector3.Transform(Target - position, Matrix.CreateRotationY(0));
             ViewVector.Normalize();
             View = Matrix.CreateLookAt(position, Target, Vector3.UnitY);
-            base.Update();
         }
     }
 }
