@@ -9,6 +9,13 @@ namespace GameBaseLibrary
     public class ModelObject : Entity
     {
         Transform transform;
+        public Transform Transform
+        {
+            set
+            {
+                transform = value;
+            }
+        }
         Mesh mesh;
         MeshRender render;
 
@@ -19,10 +26,14 @@ namespace GameBaseLibrary
             render = new MeshRender();
         }
 
-        public void Initialize(Model model, Effect effect, List<Texture2D> textures)
+        public void Initialize(Model model, Effect effect, List<Texture2D> textures, Transform transform = null)
         {
             mesh.Initialize(model);
             render.Initialize(effect, textures);
+            if (transform != null)
+            {
+                this.transform = transform;
+            }
         }
 
         public void Draw(Camera camera)

@@ -10,14 +10,19 @@ namespace GameBaseLibrary
         public Vector3 Target { get; set; }
         public Vector3 ViewVector { get; set; }
         public Matrix View { get; set; }
+
         public Matrix Projection { get; set; }
+        public float FieldOfView { get; set; }
+        public float AspectRatio { get; set; }
 
         public Camera()
         {
-            Near = 0.1f;
+            //TODO:マジナン
+            Near = 1.0f;
             Far = 1000.0f;
-            //TODO:マジナンどうにかする
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 8f / 6f, Near, Far);
+            FieldOfView = MathHelper.ToRadians(45);
+            AspectRatio = 1280 / 720;
+            Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, Near, Far);
         }
 
         public void Initialize(Vector3 position)

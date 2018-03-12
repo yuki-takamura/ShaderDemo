@@ -22,10 +22,14 @@ namespace ShaderDemo
 
         MainCamera mainCamera;
         ModelObject sphere;
+        ModelObject plane;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferMultiSampling = true;
             Content.RootDirectory = "Content";
         }
 
@@ -36,6 +40,7 @@ namespace ShaderDemo
             mainCamera.Initialize();
 
             sphere = new ModelObject();
+            plane = new ModelObject();
 
             base.Initialize();
         }
@@ -49,8 +54,12 @@ namespace ShaderDemo
             List<Texture2D> textures = new List<Texture2D>();
             textures.Add(Content.Load<Texture2D>("DiffuseMap"));
             textures.Add(Content.Load<Texture2D>("NormalMap"));
+            Transform transform = new Transform(Vector3.UnitY * 2, Vector3.Zero, Vector3.One * 0.5f);
+            sphere.Initialize(model, effect, textures, transform);
 
-            sphere.Initialize(model, effect, textures);
+            model = Content.Load<Model>("Plane");
+            transform = new Transform(Vector3.Zero, Vector3.Zero, Vector3.One * 5);
+            plane.Initialize(model, null, textures, transform);
         }
 
         protected override void UnloadContent()
@@ -78,6 +87,7 @@ namespace ShaderDemo
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             sphere.Draw(mainCamera.Camera);
+            plane.Draw(mainCamera.Camera);
 
             base.Draw(gameTime);
         }

@@ -66,8 +66,23 @@ namespace GameBaseLibrary
                     Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(world));
                     effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
 
-                    effect.Parameters["ModelTexture"].SetValue(textureMap.textures[(int)Map.Diffuse]);
-                    effect.Parameters["NormalMap"].SetValue(textureMap.textures[(int)Map.Normal]);
+                    try
+                    {
+                        effect.Parameters["ModelTexture"].SetValue(textureMap.textures[(int)Map.Diffuse]);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("DiffuseMapがありません");
+                    }
+
+                    try
+                    {
+                        effect.Parameters["NormalMap"].SetValue(textureMap.textures[(int)Map.Normal]);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("NormalMapがありません");
+                    }
                 }
                 modelMesh.Draw();
             }

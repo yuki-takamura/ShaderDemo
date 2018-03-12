@@ -14,7 +14,7 @@ float DiffuseIntensity = 1.0;
 
 float Shininess = 20;
 float4 SpecularColor = float4(1,1,1,1);
-float SpecularIntensity = 0;
+float SpecularIntensity = 1.0;
 float3 ViewVector = float3(1, 1, 0);
 
 texture ModelTexture;

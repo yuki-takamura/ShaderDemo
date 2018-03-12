@@ -43,9 +43,10 @@ namespace ShaderDemo
             const float distance = 5;
             const float rotateAmount = 0.01f;
 
-            angle += rotateAmount;
+            //angle += rotateAmount;
             transform.position = distance
                 *(Vector3.UnitX * (float)Math.Sin(angle)
+                + Vector3.UnitY * 0.7f
                 + Vector3.UnitZ * (float)Math.Cos(angle));
             camera.Update(transform.position);
         }
