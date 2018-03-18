@@ -51,15 +51,25 @@ namespace ShaderDemo
 
             Model model = Content.Load<Model>("Sphere");
             Effect effect = Content.Load<Effect>("Diffuse");
-            List<Texture2D> textures = new List<Texture2D>();
-            textures.Add(Content.Load<Texture2D>("DiffuseMap"));
-            textures.Add(Content.Load<Texture2D>("NormalMap"));
+            List<Texture2D> sphereTextures = LoadTexture("DiffuseMap", "NormalMap");
             Transform transform = new Transform(Vector3.UnitY * 2, Vector3.Zero, Vector3.One * 0.5f);
-            sphere.Initialize(model, effect, textures, transform);
+            sphere.Initialize(model, effect, sphereTextures, transform);
 
             model = Content.Load<Model>("Plane");
+            List<Texture2D> planeTextures = LoadTexture("Tile", "Tile_N");
             transform = new Transform(Vector3.Zero, Vector3.Zero, Vector3.One * 5);
-            plane.Initialize(model, null, textures, transform);
+            plane.Initialize(model, effect, planeTextures, transform);
+        }
+
+        private List<Texture2D> LoadTexture(params string[] textureName)
+        {
+            List<Texture2D> textures = new List<Texture2D>();
+            for (int i = 0; i < textureName.Length; i++)
+            {
+                textures.Add(Content.Load<Texture2D>(textureName[i]));
+            }
+
+            return textures;
         }
 
         protected override void UnloadContent()
