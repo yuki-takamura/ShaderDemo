@@ -36,7 +36,7 @@ namespace ShaderDemo
         const int shadowMapResolution = 4096;
 
         RenderTarget2D postEffectRenderTarget;
-        Effect negativeEffect;
+        Effect postEffect;
 
         Light light;
 
@@ -92,7 +92,7 @@ namespace ShaderDemo
                 SurfaceFormat.Single,
                 DepthFormat.Depth24);
 
-            negativeEffect = Content.Load<Effect>("PostProcessEffect");
+            postEffect = Content.Load<Effect>("PostProcessEffect");
             postEffectRenderTarget = new RenderTarget2D(graphics.GraphicsDevice,
                 graphics.PreferredBackBufferWidth,
                 graphics.PreferredBackBufferHeight,
@@ -156,10 +156,9 @@ namespace ShaderDemo
 
             CreateShadowMap();
 
-            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1.0f, 0);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.White, 1.0f, 0);
             GraphicsDevice.SetRenderTarget(postEffectRenderTarget);
-            GraphicsDevice.Clear(Color.Transparent);
-
+            GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.SamplerStates[1] = SamplerState.PointClamp;
             GraphicsDevice.SamplerStates[2] = SamplerState.PointClamp;
 
@@ -198,10 +197,10 @@ namespace ShaderDemo
         {
             if (techniqueName != null)
             {
-                negativeEffect.CurrentTechnique = negativeEffect.Techniques[techniqueName];
-                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default,
-                    RasterizerState.CullNone, negativeEffect);
-                spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.White);
+                postEffect.CurrentTechnique = postEffect.Techniques[techniqueName];
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None,
+                    RasterizerState.CullNone, postEffect);
+                spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.Transparent);
             }
             else
             {
