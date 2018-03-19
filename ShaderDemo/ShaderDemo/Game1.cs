@@ -18,6 +18,8 @@ namespace ShaderDemo
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
+        const int windowWidth = 1600;
+        const int windowHegiht = 960;
         SpriteBatch spriteBatch;
 
         MainCamera mainCamera;
@@ -27,8 +29,8 @@ namespace ShaderDemo
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = windowWidth;
+            graphics.PreferredBackBufferHeight = windowHegiht;
             graphics.PreferMultiSampling = true;
             Content.RootDirectory = "Content";
         }
@@ -61,6 +63,11 @@ namespace ShaderDemo
             plane.Initialize(model, effect, planeTextures, transform);
         }
 
+        /// <summary>
+        /// マテリアルテクスチャを読み取り、Listを作成する
+        /// </summary>
+        /// <param name="textureName"></param>
+        /// <returns></returns>
         private List<Texture2D> LoadTexture(params string[] textureName)
         {
             List<Texture2D> textures = new List<Texture2D>();
@@ -88,10 +95,11 @@ namespace ShaderDemo
                 this.Exit();
             }
 
-            mainCamera.Update();
+            mainCamera.Update(gameTime);
 
             base.Update(gameTime);
         }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);

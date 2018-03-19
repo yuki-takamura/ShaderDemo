@@ -8,6 +8,7 @@ namespace GameBaseLibrary
         public float Far { get; set; }
 
         public Vector3 Target { get; set; }
+        public Vector3 Forward { get; set; }
         public Vector3 ViewVector { get; set; }
         public Matrix View { get; set; }
 
@@ -21,7 +22,7 @@ namespace GameBaseLibrary
             Near = 1.0f;
             Far = 1000.0f;
             FieldOfView = MathHelper.ToRadians(45);
-            AspectRatio = 1280 / 720;
+            AspectRatio = 1600 / 960;
             Projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, Near, Far);
         }
 
@@ -38,7 +39,7 @@ namespace GameBaseLibrary
 
             ViewVector = Vector3.Transform(Target - position, Matrix.CreateRotationY(0));
             ViewVector.Normalize();
-            View = Matrix.CreateLookAt(position, Target, Vector3.UnitY);
+            View = Matrix.CreateLookAt(position, position + Forward, Vector3.Up);
         }
     }
 }
