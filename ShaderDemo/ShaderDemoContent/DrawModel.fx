@@ -18,7 +18,7 @@ float DiffuseIntensity = 1.0;
 
 float Shininess = 20;
 float4 SpecularColor = float4(1,1,1,1);
-float SpecularIntensity = 1.0;
+float SpecularIntensity = 1;
 float3 ViewVector = float3(1, 1, 0);
 
 texture ModelTexture;
@@ -123,7 +123,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
    float3 light = normalize(LightDirection);
    float3 r = normalize(2 * dot(light, bumpNormal) * bumpNormal - light);
-   float3 v = normalize(mul(normalize(ViewVector), World));
+   float3 v = normalize(mul(normalize(LightDirection), World));
    float dotProduct = dot(r, v);
 
    float4 specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
@@ -131,15 +131,27 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
    textureColor.a = 1;
 
+   //ライト空間でのこのピクセルの位置を見つける
    float4 lightingPosition = mul(input.WorldPos, LightViewProj);
+   
+   //シャドウマップでのこのピクセルの位置を見つける
    float2 ShadowTexCoord = 0.5f * lightingPosition.xy /
 							lightingPosition.w + float2(0.5f, 0.5f);
    ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
+
    float shadowColor = 1;
+
+   //シャドウマップに格納された現在の深度を取得する
    float shadowDepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
+
+   //現在のピクセル深度を計算する
+   //バイアスは、オクルーダーのピクセルが描画されるときにおきる
+   //浮動少数点誤差を防止するために使用される
    float ourDepth  = (lightingPosition.z / lightingPosition.w) - DepthBias;
+
+   //このピクセルがシャドウマップで値の前にあるか後にあるかを調べる
    if(shadowDepth < ourDepth)
-		shadowColor = 0.25f;
+		shadowColor = 0.25f; //輝度を低くすることでピクセルをシャドウする
 
    return saturate((textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular) * shadowColor);
 }

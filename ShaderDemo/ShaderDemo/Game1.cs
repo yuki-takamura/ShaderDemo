@@ -35,9 +35,13 @@ namespace ShaderDemo
         RenderTarget2D shadowRenderTarget;
         const int shadowMapResolution = 4096;
 
-        //Vector3 lightDir = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
-        //public Matrix lightViewProjection;
+        RenderTarget2D postEffectRenderTarget;
+        Effect negativeEffect;
+
         Light light;
+
+        int switching = 0;
+        const int max = 3;
 
         public Game1()
         {
@@ -68,7 +72,7 @@ namespace ShaderDemo
             Model model = Content.Load<Model>("Sphere");
             Effect effect = Content.Load<Effect>("DrawModel");
             List<Texture2D> sphereTextures = LoadTexture("DiffuseMap", "NormalMap");
-            Transform transform = new Transform(Vector3.UnitY * 2, Vector3.Zero, Vector3.One * 0.5f);
+            Transform transform = new Transform(Vector3.UnitY, Vector3.Zero, Vector3.One * 0.5f);
             sphereModel.Initialize(model, effect, sphereTextures, transform);
 
             model = Content.Load<Model>("Plane");
@@ -87,6 +91,14 @@ namespace ShaderDemo
                 false,
                 SurfaceFormat.Single,
                 DepthFormat.Depth24);
+
+            negativeEffect = Content.Load<Effect>("PostProcessEffect");
+            postEffectRenderTarget = new RenderTarget2D(graphics.GraphicsDevice,
+                graphics.PreferredBackBufferWidth,
+                graphics.PreferredBackBufferHeight,
+                false,
+                SurfaceFormat.Color,
+                DepthFormat.Depth16);
 
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
         }
@@ -123,6 +135,13 @@ namespace ShaderDemo
                 this.Exit();
             }
 
+            if (InputManager.IsJustKeyDown(Keys.Z))
+            {
+                switching++;
+                if (switching > max)
+                    switching = 0;
+            }
+
             mainCamera.Update(gameTime);
 
             base.Update(gameTime);
@@ -137,17 +156,59 @@ namespace ShaderDemo
 
             CreateShadowMap();
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1.0f, 0);
+            GraphicsDevice.SetRenderTarget(postEffectRenderTarget);
+            GraphicsDevice.Clear(Color.Transparent);
+
             GraphicsDevice.SamplerStates[1] = SamplerState.PointClamp;
             GraphicsDevice.SamplerStates[2] = SamplerState.PointClamp;
+
 
             sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             cylinderModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
 
+            GraphicsDevice.SetRenderTarget(null);
+
+            switch (switching)
+            {
+                case 0:
+                    SetPostEffect();
+                    break;
+                case 1:
+                    SetPostEffect("Flip");
+                    break;
+                case 2:
+                    SetPostEffect("Mono");
+                    break;
+                case 3:
+                    SetPostEffect("Sepia");
+                    break;
+                default :
+                    SetPostEffect();
+                    break;
+            }
+
             DrawShadowMapToScreen();
 
             base.Draw(gameTime);
+        }
+
+        private void SetPostEffect(string techniqueName = null)
+        {
+            if (techniqueName != null)
+            {
+                negativeEffect.CurrentTechnique = negativeEffect.Techniques[techniqueName];
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default,
+                    RasterizerState.CullNone, negativeEffect);
+                spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.White);
+            }
+            else
+            {
+                spriteBatch.Begin();
+                spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.White);
+            }
+            spriteBatch.End();
         }
 
         Matrix CreateLightViewProjectionMatrix()
@@ -201,7 +262,7 @@ namespace ShaderDemo
             GraphicsDevice.Clear(Color.White);
 
             sphereModel.Draw(mainCamera.Camera, light);
-            cylinderModel.Draw(mainCamera.Camera, light);
+            //cylinderModel.Draw(mainCamera.Camera, light);
 
             //レンダーターゲットを再びバックバッファーに設定する
             GraphicsDevice.SetRenderTarget(null);
@@ -210,7 +271,7 @@ namespace ShaderDemo
         void DrawShadowMapToScreen()
         {
             spriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp, null, null);
-            spriteBatch.Draw(shadowRenderTarget, new Rectangle(0, 0, 128, 128), Color.White);
+            spriteBatch.Draw(shadowRenderTarget, new Rectangle(20, 20, 128, 128), Color.White);
             spriteBatch.End();
 
             GraphicsDevice.Textures[0] = null;

@@ -76,3 +76,4 @@ ShaderDemo/ShaderDemo/bin/x86/Debug/Content/DrawModel.xnb
 ShaderDemo/ShaderDemoContent/obj/x86/Debug/Cylinder_0.xml
 ShaderDemo/ShaderDemo/bin/x86/Debug/Content/GrassGreen.xnb
 ShaderDemo/ShaderDemo/bin/x86/Debug/Content/Cylinder.xnb
+*.xnb
