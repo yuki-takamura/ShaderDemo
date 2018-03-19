@@ -25,15 +25,18 @@ namespace ShaderDemo
             }
         }
 
-        float angle = 0;
+        //float angle = 0;
         Vector3 cameraRight;
+
+        static Vector3 firstPosition = new Vector3(0, 4, 7);
+        static Vector3 firstForward = new Vector3(0, -0.4472136f, -0.8944272f);
 
         public MainCamera()
         {
             transform = new Transform();
             camera = new Camera();
-            transform.position = new Vector3(0, 4, 7);
-            camera.Forward = new Vector3(0, -0.4472136f, -0.8944272f);
+            transform.position = firstPosition;
+            camera.Forward = firstForward;
         }
 
         public void Initialize()
@@ -44,7 +47,7 @@ namespace ShaderDemo
         public void Update(GameTime gameTime)
         {
             float time = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            const float distance = 5;
+            //const float distance = 5;
 
             //transform.position = distance
             //    * (Vector3.UnitX * (float)Math.Sin(angle)
@@ -52,13 +55,12 @@ namespace ShaderDemo
             //    + Vector3.UnitZ * (float)Math.Cos(angle));
             UpdateRotation(time);
             UpdateLocation(time);
-
             camera.Update(transform.position);
         }
 
         private void UpdateRotation(float time)
         {
-            const float unit = 0.0001f;
+            const float unit = 0.0005f;
 
             float pitch = 0;
             float turn = 0;
@@ -92,7 +94,7 @@ namespace ShaderDemo
 
         private void UpdateLocation(float time)
         {
-            const float unit = 0.001f;
+            const float unit = 0.005f;
 
             if (InputManager.IsKeyDown(Keys.W))
                 transform.position += camera.Forward * time * unit;
@@ -108,16 +110,9 @@ namespace ShaderDemo
 
             if (InputManager.IsKeyDown(Keys.R))
             {
-                transform.position = new Vector3(0, 50, 50);
-                camera.Forward = new Vector3(0, 0, -1);
+                transform.position = firstPosition;
+                camera.Forward = firstForward;
             }
-
-            camera.Forward.Normalize();
-        }
-
-        private void Update(float time)
-        {
-
         }
     }
 }

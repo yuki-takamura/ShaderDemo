@@ -39,6 +39,7 @@ namespace GameBaseLibrary
 
             ViewVector = Vector3.Transform(Target - position, Matrix.CreateRotationY(0));
             ViewVector.Normalize();
+            Forward.Normalize();
             View = Matrix.CreateLookAt(position, position + Forward, Vector3.Up);
         }
     }

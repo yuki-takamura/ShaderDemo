@@ -42,8 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Diffuse.fx">
-      <Name>Diffuse</Name>
+    <Compile Include="DrawModel.fx">
+      <Name>DrawModel</Name>
       <Importer>EffectImporter</Importer>
       <Processor>EffectProcessor</Processor>
     </Compile>

@@ -2,6 +2,11 @@ float4x4 World;
 float4x4 View;
 float4x4 Projection;
 
+float4x4 LightViewProj;
+float3 LightDirection = float3(1,1,0);
+
+float DepthBias = 0.001f;
+
 // TODO: ここでエフェクトのパラメーターを追加します。
 float4 AmbientColor = float4(1,1,1,1);
 float AmbientIntensity = 0.1;
@@ -38,6 +43,12 @@ sampler2D bumpSampler = sampler_state
 	AddressV = Wrap;
 };
 
+texture ShadowMap;
+sampler ShadowMapSampler = sampler_state
+{
+	Texture = <ShadowMap>;
+};
+
 struct VertexShaderInput
 {
     float4 Position : POSITION0;
@@ -62,6 +73,26 @@ struct VertexShaderOutput
 	float3 Tangent : TEXCOORD2;
 	float3 Binormal : TEXCOORD3;
 };
+
+struct CreateShadowMap_VSOutput
+{
+	float4 Position : POSITION;
+	float Depth     : TEXCOORD0;
+};
+
+//モデルをライト空間にトランスフォームし、オブジェクトの深度外をレンダリングする
+CreateShadowMap_VSOutput CreateShadowMap_VertexShader(float4 Position : POSITION)
+{
+	CreateShadowMap_VSOutput Out;
+	Out.Position = mul(Position, mul(World, LightViewProj));
+	Out.Depth = Out.Position.z / Out.Position.w;
+	return Out;
+}
+
+float4 CreateShadowMap_PixelShader(CreateShadowMap_VSOutput input) : COLOR
+{
+	return float4(input.Depth, 0, 0, 0);
+}
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
@@ -95,20 +126,39 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    float3 v = normalize(mul(normalize(ViewVector), World));
    float dotProduct = dot(r, v);
 
-   float4 specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
+   float4 specular = SpecularIntensity * SpecularColor ;//* max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
 
    float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
    textureColor.a = 1;
 
+   float4 lightingPosition = mul(input.Position, LightViewProj);
+   float2 ShadowTexCoord = 0.5f * lightingPosition.xy /
+							lightingPosition.w + float2(0.5f, 0.5f);
+   float shadowColor = 1;
+   float shadowDepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
+   float ourDepth  = (lightingPosition.z / lightingPosition.w) - DepthBias;
+   if(shadowDepth < ourDepth)
+   {
+		shadowColor = 0.5f;
+   }
+
+   //return saturate(textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular) * shadowColor;
    return saturate(textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular);
 }
 
-technique Technique1
+technique CreateShadowMap
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_2_0 CreateShadowMap_VertexShader();
+		PixelShader = compile ps_2_0 CreateShadowMap_PixelShader();
+	}
+}
+
+technique DrawWithShadowMap
 {
     pass Pass1
     {
-        // TODO: ここでレンダーステートを設定します。
-
         VertexShader = compile vs_2_0 VertexShaderFunction();
         PixelShader = compile ps_2_0 PixelShaderFunction();
     }

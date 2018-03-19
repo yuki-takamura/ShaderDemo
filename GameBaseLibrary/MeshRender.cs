@@ -24,7 +24,7 @@ namespace GameBaseLibrary
             textureMap.textures = texture;
         }
 
-        public void Draw(Mesh mesh, Matrix world, Camera camera)
+        public void Draw(Mesh mesh, Matrix world, Camera camera, Light light, RenderTarget2D renderTarget, bool castShadows)
         {
             base.Update();
 
@@ -32,7 +32,7 @@ namespace GameBaseLibrary
                 DrawWithBasicEffect(mesh, world, camera);
 
             else
-                DrawWithCustomEffect(mesh, world, camera);
+                DrawWithCustomEffect(mesh, world, camera, light, renderTarget, castShadows);
         }
 
         private void DrawWithBasicEffect(Mesh mesh, Matrix world, Camera camera)
@@ -51,17 +51,22 @@ namespace GameBaseLibrary
             }
         }
 
-        private void DrawWithCustomEffect(Mesh mesh, Matrix world, Camera camera)
+        private void DrawWithCustomEffect(Mesh mesh, Matrix world, Camera camera, Light light, RenderTarget2D renderTarget, bool castShadows)
         {
+            string techniqueName = castShadows ? "CreateShadowMap" : "DrawWithShadowMap";
+
             foreach (ModelMesh modelMesh in mesh.Model.Meshes)
             {
                 foreach (ModelMeshPart part in modelMesh.MeshParts)
                 {
                     part.Effect = effect;
+                    effect.CurrentTechnique = effect.Techniques[techniqueName];
                     effect.Parameters["World"].SetValue(world);
                     effect.Parameters["View"].SetValue(camera.View);
                     effect.Parameters["Projection"].SetValue(camera.Projection);
                     effect.Parameters["ViewVector"].SetValue(camera.ViewVector);
+                    effect.Parameters["LightDirection"].SetValue(light.dir);
+                    effect.Parameters["LightViewProj"].SetValue(light.viewProjection);
 
                     Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(world));
                     effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);
@@ -83,6 +88,9 @@ namespace GameBaseLibrary
                     {
                         Console.WriteLine("NormalMapがありません");
                     }
+
+                    if (!castShadows)
+                        effect.Parameters["ShadowMap"].SetValue(renderTarget);
                 }
                 modelMesh.Draw();
             }
