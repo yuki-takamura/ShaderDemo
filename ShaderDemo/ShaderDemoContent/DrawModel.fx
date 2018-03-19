@@ -72,6 +72,7 @@ struct VertexShaderOutput
 	float3 Normal : TEXCOORD1;
 	float3 Tangent : TEXCOORD2;
 	float3 Binormal : TEXCOORD3;
+	float4 WorldPos : TEXCOORD4;
 };
 
 struct CreateShadowMap_VSOutput
@@ -107,6 +108,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.Tangent = normalize(mul(input.Tangent, WorldInverseTranspose));
 	output.Binormal = normalize(mul(input.Binormal, WorldInverseTranspose));
 	output.TextureCoordinate = input.TextureCoordinate;
+	output.WorldPos = mul(input.Position, World);
 
     return output;
 }
@@ -126,14 +128,15 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    float3 v = normalize(mul(normalize(ViewVector), World));
    float dotProduct = dot(r, v);
 
-   float4 specular = SpecularIntensity * SpecularColor ;//* max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
+   float4 specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
 
    float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
    textureColor.a = 1;
 
-   float4 lightingPosition = mul(input.Position, LightViewProj);
+   float4 lightingPosition = mul(input.WorldPos, LightViewProj);
    float2 ShadowTexCoord = 0.5f * lightingPosition.xy /
 							lightingPosition.w + float2(0.5f, 0.5f);
+   ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
    float shadowColor = 1;
    float shadowDepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
    float ourDepth  = (lightingPosition.z / lightingPosition.w) - DepthBias;
@@ -142,8 +145,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 		shadowColor = 0.5f;
    }
 
-   //return saturate(textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular) * shadowColor;
-   return saturate(textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular);
+   return saturate((textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular) * shadowColor);
 }
 
 technique CreateShadowMap

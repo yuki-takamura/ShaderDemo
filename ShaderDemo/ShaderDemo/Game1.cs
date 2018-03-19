@@ -32,7 +32,7 @@ namespace ShaderDemo
         /// シャドウマップのレンダーターゲット
         /// </summary>
         RenderTarget2D shadowRenderTarget;
-        const int shadowMapResolution = 2048;
+        const int shadowMapResolution = 4096;
 
         //Vector3 lightDir = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
         //public Matrix lightViewProjection;
@@ -132,6 +132,7 @@ namespace ShaderDemo
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
             GraphicsDevice.SamplerStates[1] = SamplerState.PointClamp;
+            GraphicsDevice.SamplerStates[2] = SamplerState.PointClamp;
 
             sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
