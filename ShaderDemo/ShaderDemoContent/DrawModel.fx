@@ -13,7 +13,6 @@ float AmbientIntensity = 0.1;
 
 float4x4 WorldInverseTranspose;
 
-float3 DiffuseLightDirection = float3(1,1,0);
 float4 DiffuseColor = float4(1,1,1,1);
 float DiffuseIntensity = 1.0;
 
@@ -99,9 +98,8 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
     VertexShaderOutput output;
 
-    float4 worldPosition = mul(input.Position, World);
-    float4 viewPosition = mul(worldPosition, View);
-    output.Position = mul(viewPosition, Projection);
+	float4x4 WorldViewProj = mul(mul(World, View), Projection);
+    output.Position = mul(input.Position, WorldViewProj);
 
     // TODO: ここで頂点シェーダー コードを追加します。
 	output.Normal = normalize(mul(input.Normal, WorldInverseTranspose));
@@ -119,11 +117,11 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    float3 bumpNormal = input.Normal + (bump.x * input.Tangent + bump.y * input.Binormal);
    bumpNormal = normalize(bumpNormal);
 
-   float diffuseIntensity = dot(normalize(DiffuseLightDirection), bumpNormal);
+   float diffuseIntensity = dot(normalize(LightDirection), bumpNormal);
    if(diffuseIntensity < 0)
 		diffuseIntensity = 0;
-	
-   float3 light = normalize(DiffuseLightDirection);
+
+   float3 light = normalize(LightDirection);
    float3 r = normalize(2 * dot(light, bumpNormal) * bumpNormal - light);
    float3 v = normalize(mul(normalize(ViewVector), World));
    float dotProduct = dot(r, v);
@@ -141,9 +139,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    float shadowDepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
    float ourDepth  = (lightingPosition.z / lightingPosition.w) - DepthBias;
    if(shadowDepth < ourDepth)
-   {
-		shadowColor = 0.5f;
-   }
+		shadowColor = 0.25f;
 
    return saturate((textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular) * shadowColor);
 }

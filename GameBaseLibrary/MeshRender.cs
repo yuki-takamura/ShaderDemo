@@ -65,7 +65,7 @@ namespace GameBaseLibrary
                     effect.Parameters["View"].SetValue(camera.View);
                     effect.Parameters["Projection"].SetValue(camera.Projection);
                     effect.Parameters["ViewVector"].SetValue(camera.ViewVector);
-                    effect.Parameters["LightDirection"].SetValue(light.dir);
+                    effect.Parameters["LightDirection"].SetValue(light.direction);
                     effect.Parameters["LightViewProj"].SetValue(light.viewProjection);
 
                     Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(world));

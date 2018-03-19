@@ -27,6 +27,7 @@ namespace ShaderDemo
 
         ModelObject sphereModel;
         ModelObject planeModel;
+        ModelObject cylinderModel;
 
         /// <summary>
         /// シャドウマップのレンダーターゲット
@@ -55,6 +56,7 @@ namespace ShaderDemo
 
             sphereModel = new ModelObject();
             planeModel = new ModelObject();
+            cylinderModel = new ModelObject();
 
             base.Initialize();
         }
@@ -74,6 +76,11 @@ namespace ShaderDemo
             transform = new Transform(Vector3.Zero, Vector3.Zero, Vector3.One * 5);
             planeModel.Initialize(model, effect, planeTextures, transform);
 
+            model = Content.Load<Model>("Cylinder");
+            List<Texture2D> cylinderTextures = LoadTexture("GrassGreen", "NormalMap");
+            transform = new Transform(new Vector3(-2, 1, 1), Vector3.Zero, Vector3.One * 0.5f);
+            cylinderModel.Initialize(model, effect, cylinderTextures, transform);
+
             shadowRenderTarget = new RenderTarget2D(graphics.GraphicsDevice,
                 shadowMapResolution,
                 shadowMapResolution,
@@ -81,7 +88,7 @@ namespace ShaderDemo
                 SurfaceFormat.Single,
                 DepthFormat.Depth24);
 
-            light.dir = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
+            light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
         }
 
         /// <summary>
@@ -136,6 +143,7 @@ namespace ShaderDemo
 
             sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
+            cylinderModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
 
             DrawShadowMapToScreen();
 
@@ -145,7 +153,7 @@ namespace ShaderDemo
         Matrix CreateLightViewProjectionMatrix()
         {
             Matrix lightRotation = Matrix.CreateLookAt(Vector3.Zero,
-                -light.dir,
+                -light.direction,
                 Vector3.Up);
 
             //錐台のコーナーを取得
@@ -172,7 +180,7 @@ namespace ShaderDemo
 
             //光源のビュー行列を作成
             Matrix lightView = Matrix.CreateLookAt(lightPosition,
-                 lightPosition - light.dir,
+                 lightPosition - light.direction,
                  Vector3.Up);
 
             //光源の射影行列を作成する
@@ -193,6 +201,7 @@ namespace ShaderDemo
             GraphicsDevice.Clear(Color.White);
 
             sphereModel.Draw(mainCamera.Camera, light);
+            cylinderModel.Draw(mainCamera.Camera, light);
 
             //レンダーターゲットを再びバックバッファーに設定する
             GraphicsDevice.SetRenderTarget(null);

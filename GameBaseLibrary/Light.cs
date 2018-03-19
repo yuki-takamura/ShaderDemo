@@ -8,7 +8,7 @@ namespace GameBaseLibrary
 {
     public struct Light
     {
-        public Vector3 dir;
+        public Vector3 direction;
         public Matrix viewProjection;
     }
 }
