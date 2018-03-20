@@ -15,6 +15,8 @@ float4 Negative(PixelShader_Input p) : COLOR0
 
 float4 Monotone(PixelShader_Input p) : COLOR0
 {
+	p.TexCoord.x += sin(radians(p.TexCoord.y * 270)) * 0.1f;
+	p.TexCoord.y += cos(radians(p.TexCoord.x * 270)) * 0.1f;
 	float4 col = tex2D(samplerState, p.TexCoord.xy);
 	col.rgb = (col.r + col.g + col.b) * 0.3333f;
 

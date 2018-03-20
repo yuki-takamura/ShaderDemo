@@ -98,7 +98,7 @@ namespace ShaderDemo
                 graphics.PreferredBackBufferHeight,
                 false,
                 SurfaceFormat.Color,
-                DepthFormat.Depth16);
+                DepthFormat.Depth24);
 
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
         }
@@ -156,12 +156,12 @@ namespace ShaderDemo
 
             CreateShadowMap();
 
-            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.White, 1.0f, 0);
+            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1.0f, 0);
             GraphicsDevice.SetRenderTarget(postEffectRenderTarget);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            GraphicsDevice.SamplerStates[1] = SamplerState.PointClamp;
-            GraphicsDevice.SamplerStates[2] = SamplerState.PointClamp;
+            GraphicsDevice.Clear(Color.Transparent);
 
+            for(int i = 0; i< 4;i++)
+                GraphicsDevice.SamplerStates[i] = SamplerState.PointClamp;
 
             sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
@@ -183,7 +183,7 @@ namespace ShaderDemo
                 case 3:
                     SetPostEffect("Sepia");
                     break;
-                default :
+                default:
                     SetPostEffect();
                     break;
             }
@@ -200,7 +200,7 @@ namespace ShaderDemo
                 postEffect.CurrentTechnique = postEffect.Techniques[techniqueName];
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None,
                     RasterizerState.CullNone, postEffect);
-                spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.Transparent);
+                spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.White);
             }
             else
             {
