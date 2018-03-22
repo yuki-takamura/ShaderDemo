@@ -18,7 +18,7 @@ float DiffuseIntensity = 1.0;
 
 float Shininess = 20;
 float4 SpecularColor = float4(1,1,1,1);
-float SpecularIntensity = 1;
+float SpecularIntensity = 0.5f;
 float3 ViewVector = float3(1, 1, 0);
 
 texture ModelTexture;
@@ -118,18 +118,28 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    bumpNormal = normalize(bumpNormal);
 
    float diffuseIntensity = dot(normalize(LightDirection), bumpNormal);
-   if(diffuseIntensity < 0)
+   if(diffuseIntensity < 0.25)
 		diffuseIntensity = 0;
+   else if(diffuseIntensity > 0.75)
+        diffuseIntensity = 1;
+   else
+        diffuseIntensity = 0.5;
 
    float3 light = normalize(LightDirection);
    float3 r = normalize(2 * dot(light, bumpNormal) * bumpNormal - light);
    float3 v = normalize(mul(normalize(LightDirection), World));
    float dotProduct = dot(r, v);
+   if(dotProduct < 0.5)
+	dotProduct = 0.01;
+   else if(dotProduct > 0.75)
+    dotProduct = 1;
 
    float4 specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
 
    float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
    textureColor.a = 1;
+
+   float4 diffuse =  saturate(textureColor * diffuseIntensity + AmbientColor * AmbientIntensity + specular);
 
    //ライト空間でのこのピクセルの位置を見つける
    float4 lightingPosition = mul(input.WorldPos, LightViewProj);
@@ -151,9 +161,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
    //このピクセルがシャドウマップで値の前にあるか後にあるかを調べる
    if(shadowDepth < ourDepth)
-		shadowColor = 0.25f; //輝度を低くすることでピクセルをシャドウする
+		diffuse *= 1 - 0.75; //輝度を低くすることでピクセルをシャドウする
 
-   return saturate((textureColor * (diffuseIntensity) + AmbientColor * AmbientIntensity + specular) * shadowColor);
+   return diffuse;
 }
 
 technique CreateShadowMap

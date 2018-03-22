@@ -259,7 +259,7 @@ namespace ShaderDemo
             GraphicsDevice.Clear(Color.White);
 
             sphereModel.Draw(mainCamera.Camera, light);
-            //cylinderModel.Draw(mainCamera.Camera, light);
+            cylinderModel.Draw(mainCamera.Camera, light);
 
             //レンダーターゲットを再びバックバッファーに設定する
             GraphicsDevice.SetRenderTarget(null);
