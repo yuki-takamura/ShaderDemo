@@ -155,19 +155,17 @@ namespace ShaderDemo
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             CreateShadowMap();
-
-            GraphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.CornflowerBlue, 1.0f, 0);
-            GraphicsDevice.SetRenderTarget(postEffectRenderTarget);
-            GraphicsDevice.Clear(Color.Transparent);
-
             for(int i = 0; i< 4;i++)
                 GraphicsDevice.SamplerStates[i] = SamplerState.PointClamp;
+
+            GraphicsDevice.SetRenderTarget(postEffectRenderTarget);
 
             sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             cylinderModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
 
             GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.Transparent);
 
             switch (switching)
             {
