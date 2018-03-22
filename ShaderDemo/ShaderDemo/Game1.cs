@@ -40,8 +40,10 @@ namespace ShaderDemo
 
         Light light;
 
+        Texture2D sketchTexture;
+
         int switching = 0;
-        const int max = 3;
+        const int max = 4;
 
         public Game1()
         {
@@ -101,6 +103,8 @@ namespace ShaderDemo
                 DepthFormat.Depth24);
 
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
+
+            sketchTexture = Content.Load<Texture2D>("SketchTexture");
         }
 
         /// <summary>
@@ -135,6 +139,7 @@ namespace ShaderDemo
                 this.Exit();
             }
 
+            //ポストエフェクトの切り替えを行う
             if (InputManager.IsJustKeyDown(Keys.Z))
             {
                 switching++;
@@ -181,6 +186,9 @@ namespace ShaderDemo
                 case 3:
                     SetPostEffect("Sepia");
                     break;
+                case 4:
+                    SetPostEffect("Sketch");
+                    break;
                 default:
                     SetPostEffect();
                     break;
@@ -195,6 +203,11 @@ namespace ShaderDemo
         {
             if (techniqueName != null)
             {
+                postEffect.Parameters["SketchThreshold"].SetValue(0.4f);
+                postEffect.Parameters["SketchBrightness"].SetValue(0.4f);
+                postEffect.Parameters["SketchJitter"].SetValue(0.1f);
+                postEffect.Parameters["SketchTexture"].SetValue(sketchTexture);
+                
                 postEffect.CurrentTechnique = postEffect.Techniques[techniqueName];
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None,
                     RasterizerState.CullNone, postEffect);

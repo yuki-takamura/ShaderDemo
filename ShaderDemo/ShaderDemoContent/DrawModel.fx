@@ -162,6 +162,8 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    //このピクセルがシャドウマップで値の前にあるか後にあるかを調べる
    if(shadowDepth < ourDepth)
 		diffuse *= 1 - 0.75; //輝度を低くすることでピクセルをシャドウする
+   
+   diffuse.a = 0.8f;
 
    return diffuse;
 }
@@ -179,6 +181,9 @@ technique DrawWithShadowMap
 {
     pass Pass1
     {
+		AlphaBlendEnable = TRUE;
+		DestBlend = INVSRCALPHA;
+		SrcBlend = SRCALPHA;
         VertexShader = compile vs_2_0 VertexShaderFunction();
         PixelShader = compile ps_2_0 PixelShaderFunction();
     }
