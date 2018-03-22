@@ -11,6 +11,7 @@ namespace GameBaseLibrary
         bool enableBasicEffect = false;
         Effect effect;
         TextureMap textureMap;
+        static Vector3 backColor = new Vector3(0.82f, 0.82f, 0.78f);
 
         public void Initialize(Effect effect, List<Texture2D> texture)
         {
@@ -41,8 +42,9 @@ namespace GameBaseLibrary
             {
                 foreach (BasicEffect effect in modelMesh.Effects)
                 {
-                    effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
+                    effect.DiffuseColor = backColor;
+                    //effect.EnableDefaultLighting();
+                    //effect.PreferPerPixelLighting = true;
                     effect.World = world;
                     effect.View = camera.View;
                     effect.Projection = camera.Projection;

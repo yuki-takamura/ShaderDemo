@@ -28,6 +28,7 @@ namespace ShaderDemo
         ModelObject sphereModel;
         ModelObject planeModel;
         ModelObject cylinderModel;
+        ModelObject skyBoxModel;
 
         /// <summary>
         /// シャドウマップのレンダーターゲット
@@ -63,6 +64,7 @@ namespace ShaderDemo
             sphereModel = new ModelObject();
             planeModel = new ModelObject();
             cylinderModel = new ModelObject();
+            skyBoxModel = new ModelObject();
 
             base.Initialize();
         }
@@ -86,6 +88,10 @@ namespace ShaderDemo
             List<Texture2D> cylinderTextures = LoadTexture("GrassGreen", "NormalMap");
             transform = new Transform(new Vector3(-2, 1, 1), Vector3.Zero, Vector3.One * 0.5f);
             cylinderModel.Initialize(model, effect, cylinderTextures, transform);
+
+            model = Content.Load<Model>("SkyBox");
+            transform = new Transform(Vector3.Zero, Vector3.Zero, Vector3.One * 100);
+            skyBoxModel.Initialize(model, null, null, transform);
 
             shadowRenderTarget = new RenderTarget2D(graphics.GraphicsDevice,
                 shadowMapResolution,
@@ -168,14 +174,15 @@ namespace ShaderDemo
             sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
             cylinderModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
+            skyBoxModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
 
             GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.Transparent);
+            GraphicsDevice.Clear(Color.CadetBlue);
 
             switch (switching)
             {
                 case 0:
-                    SetPostEffect();
+                    SetPostEffect("Sketch");
                     break;
                 case 1:
                     SetPostEffect("Flip");
@@ -187,7 +194,7 @@ namespace ShaderDemo
                     SetPostEffect("Sepia");
                     break;
                 case 4:
-                    SetPostEffect("Sketch");
+                    SetPostEffect();
                     break;
                 default:
                     SetPostEffect();
@@ -203,7 +210,7 @@ namespace ShaderDemo
         {
             if (techniqueName != null)
             {
-                postEffect.Parameters["SketchThreshold"].SetValue(0.4f);
+                postEffect.Parameters["SketchThreshold"].SetValue(0.25f);
                 postEffect.Parameters["SketchBrightness"].SetValue(0.4f);
                 postEffect.Parameters["SketchJitter"].SetValue(0.1f);
                 postEffect.Parameters["SketchTexture"].SetValue(sketchTexture);
