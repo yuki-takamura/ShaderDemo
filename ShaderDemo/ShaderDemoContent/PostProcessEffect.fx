@@ -5,6 +5,10 @@ float2 ScreenResolution;
 
 sampler samplerState;
 
+#define SampleCount 15
+float2 SampleOffsets[SampleCount];
+float SampleWeights[SampleCount];
+
 texture SketchTexture;
 sampler SketchSampler : register(s1) = sampler_state
 {
@@ -20,10 +24,24 @@ struct PixelShader_Input
 
 float4 SketchEffect(PixelShader_Input p) : COLOR0
 {
-	float4 scene = tex2D(samplerState, p.TexCoord.xy);
+	float4 col = tex2D(samplerState, p.TexCoord.xy);
+
+	float blur = 0.0015;
+	float blur2 = sin(radians(p.TexCoord.x * 270)) * 0.002f;
+	float blur3 = sin(radians(p.TexCoord.y * 270)) * 0.002f;
+
+	for(int i = 0; i < 1; i++)
+	{
+		//col += tex2D(samplerState, float2(p.TexCoord.x - blur, p.TexCoord.y - blur));
+		//col += tex2D(samplerState, float2(p.TexCoord.x + blur, p.TexCoord.y + blur));
+		col += tex2D(samplerState, float2(p.TexCoord.x + blur2, p.TexCoord.y + blur3));
+		col += tex2D(samplerState, float2(p.TexCoord.x - blur2, p.TexCoord.y - blur3));
+	}
+
+	col /= 3;
 
 	//シーンの色を調整して、非常に暗い値を削除し、コントラストを上げる
-	float3 saturatedScene = saturate((scene - SketchThreshold) * 2);
+	float3 saturatedScene = saturate((col - SketchThreshold) * 2);
 
 	//スケッチパターンのオーバーレイテクスチャを検索
 	float3 sketchPattern = tex2D(SketchSampler, p.TexCoord + SketchJitter);
@@ -32,10 +50,11 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 	//結果を正の色空間のグレースケール値に変換する
 	float sketchResult = dot(1 - negativeSketch, SketchBrightness);
 
-	scene *= sketchResult;
+	col *= sketchResult;
+
 	//scene = sketchResult;
 
-	return scene;
+	return col;
 }
 
 float4 Negative(PixelShader_Input p) : COLOR0
@@ -58,11 +77,28 @@ float4 Monotone(PixelShader_Input p) : COLOR0
 
 float4 Sepiatone(PixelShader_Input p) : COLOR0
 {
-	float4 sepiaTone = float4(0.6f, 0.4f, 0.4f, 1.0f);
-	float4 col = tex2D(samplerState, p.TexCoord.xy);
-	col.rgb = (col.r + col.g + col.b) * 0.3333f;
-	col = col * sepiaTone;
+	float4 col = 0;
+
+	//for(int i = 0; i < SampleCount; i++)
+	//{
+	//	col += tex2D(samplerState, p.TexCoord.xy + SampleOffsets[i]) * SampleWeights[i];
+	//}
 	
+	col = tex2D(samplerState, p.TexCoord.xy);
+	float blur = 0.0015;
+	float blur2 = sin(radians(p.TexCoord.x * 270)) * 0.002f;
+	float blur3 = sin(radians(p.TexCoord.y * 270)) * 0.002f;
+
+	for(int i = 0; i < 1; i++)
+	{
+		//col += tex2D(samplerState, float2(p.TexCoord.x - blur, p.TexCoord.y - blur));
+		//col += tex2D(samplerState, float2(p.TexCoord.x + blur, p.TexCoord.y + blur));
+		col += tex2D(samplerState, float2(p.TexCoord.x + blur2, p.TexCoord.y + blur3));
+		col += tex2D(samplerState, float2(p.TexCoord.x - blur2, p.TexCoord.y - blur3));
+	}
+
+	col /= 3;
+
 	return col;
 }
 

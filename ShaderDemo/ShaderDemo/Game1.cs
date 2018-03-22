@@ -210,11 +210,18 @@ namespace ShaderDemo
         {
             if (techniqueName != null)
             {
+                EffectParameter weightsParameter, offsetsParameter;
+                weightsParameter = postEffect.Parameters["SampleWeights"];
+                offsetsParameter = postEffect.Parameters["SampleOffsets"];
+
                 postEffect.Parameters["SketchThreshold"].SetValue(0.25f);
                 postEffect.Parameters["SketchBrightness"].SetValue(0.4f);
                 postEffect.Parameters["SketchJitter"].SetValue(0.1f);
                 postEffect.Parameters["SketchTexture"].SetValue(sketchTexture);
-                
+
+                SetBlur(weightsParameter, offsetsParameter);
+                SetBlur2(weightsParameter, offsetsParameter);
+
                 postEffect.CurrentTechnique = postEffect.Techniques[techniqueName];
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None,
                     RasterizerState.CullNone, postEffect);
@@ -226,6 +233,86 @@ namespace ShaderDemo
                 spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.White);
             }
             spriteBatch.End();
+        }
+
+        private void SetBlur(EffectParameter weight, EffectParameter offsets)
+        {
+            int sampleCount = weight.Elements.Count;
+
+            float[] sampleWeights = new float[sampleCount];
+            Vector2[] sampleOffsets = new Vector2[sampleCount];
+
+            sampleWeights[0] = ComputeGaussian(0);
+            sampleOffsets[0] = new Vector2(0);
+
+            float totalWeights = sampleWeights[0];
+
+            for (int i = 0; i < sampleCount / 2; i++)
+            {
+                float weightGaussian = ComputeGaussian(i + 1);
+                sampleWeights[i * 2 + 1] = weightGaussian;
+                sampleWeights[i * 2 + 2] = weightGaussian;
+                totalWeights += weightGaussian * 2;
+
+                float sampleOffset = i * 2 + 1.5f;
+
+                Vector2 delta = new Vector2(0, 1 / 900) * sampleOffset;
+
+                sampleOffsets[i * 2 + 1] = delta;
+                sampleOffsets[i * 2 + 2] = -delta;
+            }
+
+            for (int i = 0; i < sampleWeights.Length; i++)
+            {
+                sampleWeights[i] /= totalWeights;
+            }
+
+            weight.SetValue(sampleWeights);
+            offsets.SetValue(sampleOffsets);
+        }
+
+        private void SetBlur2(EffectParameter weight, EffectParameter offsets)
+        {
+            int sampleCount = weight.Elements.Count;
+
+            float[] sampleWeights = new float[sampleCount];
+            Vector2[] sampleOffsets = new Vector2[sampleCount];
+
+            sampleWeights[0] = ComputeGaussian(0);
+            sampleOffsets[0] = new Vector2(0);
+
+            float totalWeights = sampleWeights[0];
+
+            for (int i = 0; i < sampleCount / 2; i++)
+            {
+                float weightGaussian = ComputeGaussian(i + 1);
+                sampleWeights[i * 2 + 1] = weightGaussian;
+                sampleWeights[i * 2 + 2] = weightGaussian;
+                totalWeights += weightGaussian * 2;
+
+                float sampleOffset = i * 2 + 1.5f;
+
+                Vector2 delta = new Vector2(1 / 1600, 0) * sampleOffset;
+
+                sampleOffsets[i * 2 + 1] = delta;
+                sampleOffsets[i * 2 + 2] = -delta;
+            }
+
+            for (int i = 0; i < sampleWeights.Length; i++)
+            {
+                sampleWeights[i] /= totalWeights;
+            }
+
+            weight.SetValue(sampleWeights);
+            offsets.SetValue(sampleOffsets);
+        }
+
+        private float ComputeGaussian(float n)
+        {
+            float theta = 8;
+
+            return (float)((1.0 / Math.Sqrt(2 * Math.PI * theta)) *
+                            Math.Exp(-(n * n) / (2 * theta * theta)));
         }
 
         Matrix CreateLightViewProjectionMatrix()
