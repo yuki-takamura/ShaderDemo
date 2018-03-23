@@ -76,7 +76,7 @@ namespace ShaderDemo
 
             Model model = Content.Load<Model>("Sphere");
             Effect effect = Content.Load<Effect>("DrawModel");
-            List<Texture2D> sphereTextures = LoadTexture("DiffuseMap", "NormalMap");
+            List<Texture2D> sphereTextures = LoadTexture("Diffuse_Blue", "NormalMap");
             Transform transform = new Transform(Vector3.UnitY, Vector3.Zero, Vector3.One * 0.5f);
             sphereModel.Initialize(model, effect, sphereTextures, transform);
 
