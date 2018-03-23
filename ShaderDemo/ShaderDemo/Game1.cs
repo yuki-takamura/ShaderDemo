@@ -42,9 +42,10 @@ namespace ShaderDemo
         Light light;
 
         Texture2D sketchTexture;
+        Texture2D noiseTexture;
 
         int switching = 0;
-        const int max = 4;
+        const int max = 5;
 
         public Game1()
         {
@@ -111,6 +112,8 @@ namespace ShaderDemo
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
 
             sketchTexture = Content.Load<Texture2D>("Canvas_N");
+            noiseTexture = Content.Load<Texture2D>("DistortionTexture");
+            //noiseTexture = Content.Load<Texture2D>("SketchTexture");
         }
 
         /// <summary>
@@ -195,6 +198,9 @@ namespace ShaderDemo
                     SetPostEffect("Sepia");
                     break;
                 case 4:
+                    SetPostEffect("Noise");
+                    break;
+                case 5:
                     SetPostEffect();
                     break;
                 default:
@@ -216,10 +222,11 @@ namespace ShaderDemo
                 offsetsParameter = postEffect.Parameters["SampleOffsets"];
 
                 postEffect.Parameters["SamplerSize"].SetValue(new Vector2(postEffectRenderTarget.Width, postEffectRenderTarget.Height));
-                postEffect.Parameters["SketchThreshold"].SetValue(0.25f);
+                postEffect.Parameters["SketchThreshold"].SetValue(0.5f);
                 postEffect.Parameters["SketchBrightness"].SetValue(0.4f);
                 postEffect.Parameters["SketchJitter"].SetValue(0.1f);
                 postEffect.Parameters["SketchTexture"].SetValue(sketchTexture);
+                postEffect.Parameters["NoiseTexture"].SetValue(noiseTexture);
 
                 SetBlur(weightsParameter, offsetsParameter);
                 SetBlur2(weightsParameter, offsetsParameter);
