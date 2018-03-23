@@ -156,6 +156,7 @@ namespace ShaderDemo
                     switching = 0;
             }
 
+            cameraFrustum.Matrix = mainCamera.Camera.View * mainCamera.Camera.Projection;
             mainCamera.Update(gameTime);
 
             base.Update(gameTime);
