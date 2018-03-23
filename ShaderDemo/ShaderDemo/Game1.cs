@@ -110,7 +110,7 @@ namespace ShaderDemo
 
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
 
-            sketchTexture = Content.Load<Texture2D>("SketchTexture");
+            sketchTexture = Content.Load<Texture2D>("Canvas_N");
         }
 
         /// <summary>
@@ -177,7 +177,8 @@ namespace ShaderDemo
             skyBoxModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
 
             GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.CadetBlue);
+            //GraphicsDevice.Clear(Color.CadetBlue);
+            GraphicsDevice.Clear(Color.DimGray);
 
             switch (switching)
             {
@@ -214,6 +215,7 @@ namespace ShaderDemo
                 weightsParameter = postEffect.Parameters["SampleWeights"];
                 offsetsParameter = postEffect.Parameters["SampleOffsets"];
 
+                postEffect.Parameters["SamplerSize"].SetValue(new Vector2(postEffectRenderTarget.Width, postEffectRenderTarget.Height));
                 postEffect.Parameters["SketchThreshold"].SetValue(0.25f);
                 postEffect.Parameters["SketchBrightness"].SetValue(0.4f);
                 postEffect.Parameters["SketchJitter"].SetValue(0.1f);

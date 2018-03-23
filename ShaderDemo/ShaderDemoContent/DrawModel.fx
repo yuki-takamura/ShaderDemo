@@ -163,7 +163,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    if(shadowDepth < ourDepth)
 		diffuse *= 1 - 0.75; //輝度を低くすることでピクセルをシャドウする
    
-   diffuse.a = 0.8f;
+   diffuse.a = 0.9f;
 
    return diffuse;
 }
