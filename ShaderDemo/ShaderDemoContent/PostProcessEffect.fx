@@ -42,7 +42,7 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 	float blur2 = sin(radians(p.TexCoord.x * 270)) * 0.001f;
 	float blur3 = sin(radians(p.TexCoord.y * 270)) * 0.001f;
 
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < 1; i++)
 	{
 		//col += tex2D(samplerState, float2(p.TexCoord.x - blur, p.TexCoord.y - blur));
 		//col += tex2D(samplerState, float2(p.TexCoord.x + blur, p.TexCoord.y + blur));
@@ -52,7 +52,7 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 		col += tex2D(samplerState, p.TexCoord.xy - (noise.xy) * noise.z * 0.015 + blur2);
 	}
 
-	col /= 5;
+	col /= 3;
 
 	//シーンの色を調整して、非常に暗い値を削除し、コントラストを上げる
 	float3 saturatedScene = saturate((col - SketchThreshold) * 2);
@@ -77,7 +77,8 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 	col.rgb += (distance(origin, float2(column, row)) / num);
 	col.a = distance(origin, float2(column, row)) / num;
 
-	col.rgb = (col.r + col.g + col.b) * 0.3333f;
+	col.rgb -= 0.2;
+	//col.rgb = (col.r + col.g + col.b) * 0.3333f;
 
 	return col;
 }

@@ -18,8 +18,8 @@ namespace ShaderDemo
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
-        const int windowWidth = 1600;
-        const int windowHegiht = 960;
+        const int windowWidth = 800;
+        const int windowHegiht = 600;
         SpriteBatch spriteBatch;
 
         MainCamera mainCamera;
@@ -156,7 +156,7 @@ namespace ShaderDemo
                     switching = 0;
             }
 
-            cameraFrustum.Matrix = mainCamera.Camera.View * mainCamera.Camera.Projection;
+            //cameraFrustum.Matrix = mainCamera.Camera.View * mainCamera.Camera.Projection;
             mainCamera.Update(gameTime);
 
             base.Update(gameTime);

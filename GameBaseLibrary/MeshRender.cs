@@ -66,7 +66,6 @@ namespace GameBaseLibrary
                     effect.Parameters["World"].SetValue(world);
                     effect.Parameters["View"].SetValue(camera.View);
                     effect.Parameters["Projection"].SetValue(camera.Projection);
-                    effect.Parameters["ViewVector"].SetValue(camera.ViewVector);
                     effect.Parameters["LightDirection"].SetValue(light.direction);
                     effect.Parameters["LightViewProj"].SetValue(light.viewProjection);
 

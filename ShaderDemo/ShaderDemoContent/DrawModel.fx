@@ -3,9 +3,9 @@ float4x4 View;
 float4x4 Projection;
 
 float4x4 LightViewProj;
-float3 LightDirection = float3(1,1,0);
+float3 LightDirection;
 
-float DepthBias = 0.001f;
+float DepthBias = 0.005f;
 
 // TODO: ここでエフェクトのパラメーターを追加します。
 float4 AmbientColor = float4(1,1,1,1);
@@ -19,7 +19,6 @@ float DiffuseIntensity = 1.0;
 float Shininess = 20;
 float4 SpecularColor = float4(1,1,1,1);
 float SpecularIntensity = 0.5f;
-float3 ViewVector = float3(1, 1, 0);
 
 texture ModelTexture;
 sampler2D textureSampler = sampler_state
