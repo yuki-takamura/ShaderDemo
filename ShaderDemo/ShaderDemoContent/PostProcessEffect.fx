@@ -40,18 +40,10 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 
 	float blur = 0.0015;
 	float blur2 = sin(radians(p.TexCoord.x * 270)) * 0.001f;
-	float blur3 = sin(radians(p.TexCoord.y * 270)) * 0.001f;
 
-	for(int i = 0; i < 1; i++)
-	{
-		//col += tex2D(samplerState, float2(p.TexCoord.x - blur, p.TexCoord.y - blur));
-		//col += tex2D(samplerState, float2(p.TexCoord.x + blur, p.TexCoord.y + blur));
-		//col += tex2D(samplerState, float2(p.TexCoord.x + blur2, p.TexCoord.y + blur3));
-		//col += tex2D(samplerState, float2(p.TexCoord.x - blur2, p.TexCoord.y - blur3));
-		col += tex2D(samplerState, p.TexCoord.xy - (noise.xy) * noise.z * 0.015 - blur);
-		col += tex2D(samplerState, p.TexCoord.xy - (noise.xy) * noise.z * 0.015 + blur2);
-	}
-
+	//簡易ブラー
+	col += tex2D(samplerState, p.TexCoord.xy - (noise.xy) * noise.z * 0.015 - blur);
+	col += tex2D(samplerState, p.TexCoord.xy - (noise.xy) * noise.z * 0.015 + blur2);
 	col /= 3;
 
 	//シーンの色を調整して、非常に暗い値を削除し、コントラストを上げる
@@ -73,9 +65,9 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 	float row = round((p.TexCoord.y * SamplerSize.y) + 0.5);
 
 	//中心から奥にかけてマスクをかける
-	float num = 900;
-	col.rgb += (distance(origin, float2(column, row)) / num);
-	col.a = distance(origin, float2(column, row)) / num;
+	float range = 900;
+	col.rgb += distance(origin, float2(column, row)) / range;
+	col.a = distance(origin, float2(column, row)) / range;
 
 	//col.rgb -= 0.2;
 	//col.rgb = (col.r + col.g + col.b) * 0.3333f;
@@ -83,10 +75,30 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 	return col;
 }
 
-float4 Negative(PixelShader_Input p) : COLOR0
+float4 SketchEffect2(PixelShader_Input p) : COLOR0
 {
 	float4 col = tex2D(samplerState, p.TexCoord.xy);
-	col.rgb = 1 - col.rgb;
+
+	float blur = sin(radians(p.TexCoord.x * 270)) * 0.002f;
+	float blur2 = sin(radians(p.TexCoord.y * 270)) * 0.002f;
+
+	col += tex2D(samplerState, float2(p.TexCoord.x + blur, p.TexCoord.y + blur2));
+	col += tex2D(samplerState, float2(p.TexCoord.x - blur, p.TexCoord.y - blur2));
+	col /= 3;
+
+	//シーンの色を調整して、非常に暗い値を削除し、コントラストを上げる
+	float3 saturatedScene = saturate((col - SketchThreshold) * 2);
+
+	//スケッチパターンのオーバーレイテクスチャを検索
+	float3 sketchPattern = tex2D(SketchSampler, p.TexCoord + SketchJitter);
+
+	float3 negativeSketch = (1 - saturatedScene) * (1 - sketchPattern);
+	//結果を正の色空間のグレースケール値に変換する
+	float sketchResult = dot(1 - negativeSketch, SketchBrightness);
+
+	col *= sketchResult;
+
+	//scene = sketchResult;
 
 	return col;
 }
@@ -95,6 +107,7 @@ float4 Monotone(PixelShader_Input p) : COLOR0
 {
 	p.TexCoord.x += sin(radians(p.TexCoord.y * 270)) * 0.1f;
 	p.TexCoord.y += cos(radians(p.TexCoord.x * 270)) * 0.1f;
+
 	float4 col = tex2D(samplerState, p.TexCoord.xy);
 	col.rgb = (col.r + col.g + col.b) * 0.3333f;
 
@@ -103,27 +116,12 @@ float4 Monotone(PixelShader_Input p) : COLOR0
 
 float4 Sepiatone(PixelShader_Input p) : COLOR0
 {
-	float4 col = 0;
+	float4 sepiaTone = float4(0.8f, 0.45f, 0.1f, 1.0f);
+	float4 col = tex2D(samplerState, p.TexCoord);
 
-	//for(int i = 0; i < SampleCount; i++)
-	//{
-	//	col += tex2D(samplerState, p.TexCoord.xy + SampleOffsets[i]) * SampleWeights[i];
-	//}
+	col.rgb = (col.r + col.g + col.b) * 0.3333f;
 	
-	col = tex2D(samplerState, p.TexCoord.xy);
-	float blur = 0.0015;
-	float blur2 = sin(radians(p.TexCoord.x * 270)) * 0.002f;
-	float blur3 = sin(radians(p.TexCoord.y * 270)) * 0.002f;
-
-	for(int i = 0; i < 1; i++)
-	{
-		//col += tex2D(samplerState, float2(p.TexCoord.x - blur, p.TexCoord.y - blur));
-		//col += tex2D(samplerState, float2(p.TexCoord.x + blur, p.TexCoord.y + blur));
-		col += tex2D(samplerState, float2(p.TexCoord.x + blur2, p.TexCoord.y + blur3));
-		col += tex2D(samplerState, float2(p.TexCoord.x - blur2, p.TexCoord.y - blur3));
-	}
-
-	col /= 3;
+	col *= sepiaTone;
 
 	return col;
 }
@@ -148,7 +146,7 @@ technique Flip
 {
 	pass Pass0
 	{
-		PixelShader = compile ps_2_0 Negative();
+		PixelShader = compile ps_2_0 SketchEffect2();
 	}
 }
 

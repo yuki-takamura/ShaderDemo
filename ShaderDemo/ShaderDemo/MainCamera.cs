@@ -47,12 +47,7 @@ namespace ShaderDemo
         public void Update(GameTime gameTime)
         {
             float time = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            //const float distance = 5;
 
-            //transform.position = distance
-            //    * (Vector3.UnitX * (float)Math.Sin(angle)
-            //    + Vector3.UnitY * 0.7f
-            //    + Vector3.UnitZ * (float)Math.Cos(angle));
             UpdateRotation(time);
             UpdateLocation(time);
             camera.Update(transform.position);

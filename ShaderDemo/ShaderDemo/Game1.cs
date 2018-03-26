@@ -37,6 +37,7 @@ namespace ShaderDemo
         const int shadowMapResolution = 4096;
 
         RenderTarget2D postEffectRenderTarget;
+        Vector2 postEffectRenderSize;
         Effect postEffect;
 
         Light light;
@@ -108,6 +109,7 @@ namespace ShaderDemo
                 false,
                 SurfaceFormat.Color,
                 DepthFormat.Depth24);
+            postEffectRenderSize = new Vector2(postEffectRenderTarget.Width, postEffectRenderTarget.Height);
 
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
 
@@ -181,35 +183,38 @@ namespace ShaderDemo
             skyBoxModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
 
             GraphicsDevice.SetRenderTarget(null);
-            //GraphicsDevice.Clear(Color.CadetBlue);
-            GraphicsDevice.Clear(Color.DimGray);
 
             switch (switching)
             {
                 case 0:
+                    GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect("Sketch");
                     break;
                 case 1:
+                    GraphicsDevice.Clear(Color.CadetBlue);
                     SetPostEffect("Flip");
                     break;
                 case 2:
+                    GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect("Mono");
                     break;
                 case 3:
+                    GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect("Sepia");
                     break;
                 case 4:
+                    GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect("Noise");
                     break;
                 case 5:
+                    GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect();
                     break;
                 default:
+                    GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect();
                     break;
             }
-
-            DrawShadowMapToScreen();
 
             base.Draw(gameTime);
         }
@@ -218,19 +223,12 @@ namespace ShaderDemo
         {
             if (techniqueName != null)
             {
-                EffectParameter weightsParameter, offsetsParameter;
-                weightsParameter = postEffect.Parameters["SampleWeights"];
-                offsetsParameter = postEffect.Parameters["SampleOffsets"];
-
-                postEffect.Parameters["SamplerSize"].SetValue(new Vector2(postEffectRenderTarget.Width, postEffectRenderTarget.Height));
+                postEffect.Parameters["SamplerSize"].SetValue(postEffectRenderSize);
                 postEffect.Parameters["SketchThreshold"].SetValue(0.5f);
                 postEffect.Parameters["SketchBrightness"].SetValue(0.4f);
                 postEffect.Parameters["SketchJitter"].SetValue(0.1f);
                 postEffect.Parameters["SketchTexture"].SetValue(sketchTexture);
                 postEffect.Parameters["NoiseTexture"].SetValue(noiseTexture);
-
-                SetBlur(weightsParameter, offsetsParameter);
-                SetBlur2(weightsParameter, offsetsParameter);
 
                 postEffect.CurrentTechnique = postEffect.Techniques[techniqueName];
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.None,
@@ -243,86 +241,6 @@ namespace ShaderDemo
                 spriteBatch.Draw(postEffectRenderTarget, Vector2.Zero, Color.White);
             }
             spriteBatch.End();
-        }
-
-        private void SetBlur(EffectParameter weight, EffectParameter offsets)
-        {
-            int sampleCount = weight.Elements.Count;
-
-            float[] sampleWeights = new float[sampleCount];
-            Vector2[] sampleOffsets = new Vector2[sampleCount];
-
-            sampleWeights[0] = ComputeGaussian(0);
-            sampleOffsets[0] = new Vector2(0);
-
-            float totalWeights = sampleWeights[0];
-
-            for (int i = 0; i < sampleCount / 2; i++)
-            {
-                float weightGaussian = ComputeGaussian(i + 1);
-                sampleWeights[i * 2 + 1] = weightGaussian;
-                sampleWeights[i * 2 + 2] = weightGaussian;
-                totalWeights += weightGaussian * 2;
-
-                float sampleOffset = i * 2 + 1.5f;
-
-                Vector2 delta = new Vector2(0, 1 / 900) * sampleOffset;
-
-                sampleOffsets[i * 2 + 1] = delta;
-                sampleOffsets[i * 2 + 2] = -delta;
-            }
-
-            for (int i = 0; i < sampleWeights.Length; i++)
-            {
-                sampleWeights[i] /= totalWeights;
-            }
-
-            weight.SetValue(sampleWeights);
-            offsets.SetValue(sampleOffsets);
-        }
-
-        private void SetBlur2(EffectParameter weight, EffectParameter offsets)
-        {
-            int sampleCount = weight.Elements.Count;
-
-            float[] sampleWeights = new float[sampleCount];
-            Vector2[] sampleOffsets = new Vector2[sampleCount];
-
-            sampleWeights[0] = ComputeGaussian(0);
-            sampleOffsets[0] = new Vector2(0);
-
-            float totalWeights = sampleWeights[0];
-
-            for (int i = 0; i < sampleCount / 2; i++)
-            {
-                float weightGaussian = ComputeGaussian(i + 1);
-                sampleWeights[i * 2 + 1] = weightGaussian;
-                sampleWeights[i * 2 + 2] = weightGaussian;
-                totalWeights += weightGaussian * 2;
-
-                float sampleOffset = i * 2 + 1.5f;
-
-                Vector2 delta = new Vector2(1 / 1600, 0) * sampleOffset;
-
-                sampleOffsets[i * 2 + 1] = delta;
-                sampleOffsets[i * 2 + 2] = -delta;
-            }
-
-            for (int i = 0; i < sampleWeights.Length; i++)
-            {
-                sampleWeights[i] /= totalWeights;
-            }
-
-            weight.SetValue(sampleWeights);
-            offsets.SetValue(sampleOffsets);
-        }
-
-        private float ComputeGaussian(float n)
-        {
-            float theta = 8;
-
-            return (float)((1.0 / Math.Sqrt(2 * Math.PI * theta)) *
-                            Math.Exp(-(n * n) / (2 * theta * theta)));
         }
 
         Matrix CreateLightViewProjectionMatrix()
@@ -380,16 +298,6 @@ namespace ShaderDemo
 
             //レンダーターゲットを再びバックバッファーに設定する
             GraphicsDevice.SetRenderTarget(null);
-        }
-
-        void DrawShadowMapToScreen()
-        {
-            spriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp, null, null);
-            spriteBatch.Draw(shadowRenderTarget, new Rectangle(20, 20, 128, 128), Color.White);
-            spriteBatch.End();
-
-            GraphicsDevice.Textures[0] = null;
-            GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
         }
     }
 }
