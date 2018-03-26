@@ -5,7 +5,7 @@ float4x4 Projection;
 float4x4 LightViewProj;
 float3 LightDirection;
 
-float DepthBias = 0.005f;
+float DepthBias = 0.0004f;
 
 // TODO: ここでエフェクトのパラメーターを追加します。
 float4 AmbientColor = float4(1,1,1,1);

@@ -28,7 +28,7 @@ namespace ShaderDemo
         //float angle = 0;
         Vector3 cameraRight;
 
-        static Vector3 firstPosition = new Vector3(0, 4, 7);
+        static Vector3 firstPosition = new Vector3(0, 60, 100);
         static Vector3 firstForward = new Vector3(0, -0.4472136f, -0.8944272f);
 
         public MainCamera()
@@ -94,7 +94,7 @@ namespace ShaderDemo
 
         private void UpdateLocation(float time)
         {
-            const float unit = 0.005f;
+            const float unit = 0.025f;
 
             if (InputManager.IsKeyDown(Keys.W))
                 transform.position += camera.Forward * time * unit;

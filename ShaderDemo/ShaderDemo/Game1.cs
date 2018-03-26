@@ -18,8 +18,8 @@ namespace ShaderDemo
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
-        const int windowWidth = 800;
-        const int windowHegiht = 600;
+        const int windowWidth = 1600;
+        const int windowHegiht = 960;
         SpriteBatch spriteBatch;
 
         MainCamera mainCamera;
@@ -77,7 +77,7 @@ namespace ShaderDemo
             Model model = Content.Load<Model>("Sphere");
             Effect effect = Content.Load<Effect>("DrawModel");
             List<Texture2D> sphereTextures = LoadTexture("Diffuse_Blue", "NormalMap");
-            Transform transform = new Transform(Vector3.UnitY, Vector3.Zero, Vector3.One * 0.5f);
+            Transform transform = new Transform(Vector3.UnitY * 5, Vector3.Zero, Vector3.One * 0.5f);
             sphereModel.Initialize(model, effect, sphereTextures, transform);
 
             model = Content.Load<Model>("Plane");
@@ -87,7 +87,7 @@ namespace ShaderDemo
 
             model = Content.Load<Model>("Cylinder");
             List<Texture2D> cylinderTextures = LoadTexture("GrassGreen", "NormalMap");
-            transform = new Transform(new Vector3(-2, 1, 1), Vector3.Zero, Vector3.One * 0.5f);
+            transform = new Transform(new Vector3(-20, 10, 20), Vector3.Zero, Vector3.One * 0.5f);
             cylinderModel.Initialize(model, effect, cylinderTextures, transform);
 
             model = Content.Load<Model>("SkyBox");
@@ -156,8 +156,8 @@ namespace ShaderDemo
                     switching = 0;
             }
 
-            //cameraFrustum.Matrix = mainCamera.Camera.View * mainCamera.Camera.Projection;
             mainCamera.Update(gameTime);
+            cameraFrustum.Matrix = mainCamera.Camera.View * mainCamera.Camera.Projection;
 
             base.Update(gameTime);
         }
