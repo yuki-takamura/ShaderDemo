@@ -18,8 +18,8 @@ namespace ShaderDemo
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
-        const int windowWidth = 1600;
-        const int windowHegiht = 960;
+        const int windowWidth = 1280;
+        const int windowHegiht = 720;
         SpriteBatch spriteBatch;
 
         MainCamera mainCamera;
