@@ -77,7 +77,7 @@ namespace ShaderDemo
             Model model = Content.Load<Model>("Sphere");
             Effect effect = Content.Load<Effect>("DrawModel");
             List<Texture2D> sphereTextures = LoadTexture("Diffuse_Blue", "NormalMap");
-            Transform transform = new Transform(Vector3.UnitY * 5, Vector3.Zero, Vector3.One * 0.5f);
+            Transform transform = new Transform(Vector3.UnitY * 10, Vector3.Zero, Vector3.One * 0.5f);
             sphereModel.Initialize(model, effect, sphereTextures, transform);
 
             model = Content.Load<Model>("Plane");
@@ -87,7 +87,7 @@ namespace ShaderDemo
 
             model = Content.Load<Model>("Cylinder");
             List<Texture2D> cylinderTextures = LoadTexture("GrassGreen", "NormalMap");
-            transform = new Transform(new Vector3(-20, 10, 20), Vector3.Zero, Vector3.One * 0.5f);
+            transform = new Transform(new Vector3(-15, 10, 15), Vector3.Zero, Vector3.One * 0.5f);
             cylinderModel.Initialize(model, effect, cylinderTextures, transform);
 
             model = Content.Load<Model>("SkyBox");

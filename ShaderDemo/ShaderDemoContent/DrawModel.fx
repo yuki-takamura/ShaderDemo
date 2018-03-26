@@ -5,7 +5,7 @@ float4x4 Projection;
 float4x4 LightViewProj;
 float3 LightDirection;
 
-float DepthBias = 0.0004f;
+float DepthBias = 0.0002f;
 
 // TODO: ここでエフェクトのパラメーターを追加します。
 float4 AmbientColor = float4(1,1,1,1);
@@ -154,16 +154,23 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    float shadowDepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
 
    //影のジャギを低減する
-   shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord + float2(0.0001, 0)).r;
-   shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord + float2(0, 0.0001)).r;
-   shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord - float2(0.0001, 0)).r;
-   shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord - float2(0, 0.0001)).r;
-   shadowDepth /= 5;
+   int counter = 2;
+   for(int i = 0; i < counter; i++)
+   {
+		shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord + float2(0.0001, 0)).r;
+		shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord + float2(0, 0.0001)).r;
+		shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord - float2(0.0001, 0)).r;
+		shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord - float2(0, 0.0001)).r;
+   }
+   shadowDepth /= counter * 4 + 1;;
 
    //現在のピクセル深度を計算する
    //バイアスは、オクルーダーのピクセルが描画されるときにおきる
    //浮動少数点誤差を防止するために使用される
-   float ourDepth  = (lightingPosition.z / lightingPosition.w) - DepthBias;
+   float cosTheta = dot(light, bumpNormal);
+   float bias = DepthBias * tan(acos(cosTheta));
+   bias = clamp(bias, 0, 0.01);
+   float ourDepth  = (lightingPosition.z / lightingPosition.w) - bias;
 
    //このピクセルがシャドウマップで値の前にあるか後にあるかを調べる
    if(shadowDepth < ourDepth)
@@ -178,8 +185,8 @@ technique CreateShadowMap
 {
 	pass Pass1
 	{
-		VertexShader = compile vs_2_0 CreateShadowMap_VertexShader();
-		PixelShader = compile ps_2_0 CreateShadowMap_PixelShader();
+		VertexShader = compile vs_3_0 CreateShadowMap_VertexShader();
+		PixelShader = compile ps_3_0 CreateShadowMap_PixelShader();
 	}
 }
 
@@ -190,7 +197,7 @@ technique DrawWithShadowMap
 		AlphaBlendEnable = TRUE;
 		DestBlend = INVSRCALPHA;
 		SrcBlend = SRCALPHA;
-        VertexShader = compile vs_2_0 VertexShaderFunction();
-        PixelShader = compile ps_2_0 PixelShaderFunction();
+        VertexShader = compile vs_3_0 VertexShaderFunction();
+        PixelShader = compile ps_3_0 PixelShaderFunction();
     }
 }
