@@ -77,7 +77,7 @@ float4 SketchEffect(PixelShader_Input p) : COLOR0
 	col.rgb += (distance(origin, float2(column, row)) / num);
 	col.a = distance(origin, float2(column, row)) / num;
 
-	col.rgb -= 0.2;
+	//col.rgb -= 0.2;
 	//col.rgb = (col.r + col.g + col.b) * 0.3333f;
 
 	return col;
