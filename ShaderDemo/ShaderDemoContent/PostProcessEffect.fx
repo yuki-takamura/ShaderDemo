@@ -37,7 +37,7 @@ technique Flip
 {
 	pass Pass0
 	{
-		PixelShader = compile ps_2_0 Negative();
+		PixelShader = compile ps_3_0 Negative();
 	}
 }
 
@@ -45,7 +45,7 @@ technique Mono
 {
 	pass Pass0
 	{
-		PixelShader = compile ps_2_0 Monotone();
+		PixelShader = compile ps_3_0 Monotone();
 	}
 }
 
@@ -53,6 +53,6 @@ technique Sepia
 {
 	pass Pass0
 	{
-		PixelShader = compile ps_2_0 Sepiatone();
+		PixelShader = compile ps_3_0 Sepiatone();
 	}
 }

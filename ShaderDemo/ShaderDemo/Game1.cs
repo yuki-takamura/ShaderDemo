@@ -82,7 +82,7 @@ namespace ShaderDemo
 
             model = Content.Load<Model>("Cylinder");
             List<Texture2D> cylinderTextures = LoadTexture("GrassGreen", "NormalMap");
-            transform = new Transform(new Vector3(-2, 1, 1), Vector3.Zero, Vector3.One * 0.5f);
+            transform = new Transform(new Vector3(-10, 50, 50), Vector3.Zero, Vector3.One * 0.5f);
             cylinderModel.Initialize(model, effect, cylinderTextures, transform);
 
             shadowRenderTarget = new RenderTarget2D(graphics.GraphicsDevice,
@@ -143,6 +143,7 @@ namespace ShaderDemo
             }
 
             mainCamera.Update(gameTime);
+            cameraFrustum.Matrix = mainCamera.Camera.View * mainCamera.Camera.Projection;
 
             base.Update(gameTime);
         }
