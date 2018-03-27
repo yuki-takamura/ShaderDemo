@@ -25,7 +25,7 @@ namespace GameBaseLibrary
             textureMap.textures = texture;
         }
 
-        public void Draw(Mesh mesh, Matrix world, Camera camera, Light light, RenderTarget2D renderTarget, bool castShadows)
+        public void Draw(Mesh mesh, Matrix world, Camera camera, Light light, bool isToonRendering, RenderTarget2D renderTarget, bool castShadows)
         {
             base.Update();
 
@@ -33,7 +33,7 @@ namespace GameBaseLibrary
                 DrawWithBasicEffect(mesh, world, camera);
 
             else
-                DrawWithCustomEffect(mesh, world, camera, light, renderTarget, castShadows);
+                DrawWithCustomEffect(mesh, world, camera, light, isToonRendering, renderTarget, castShadows);
         }
 
         private void DrawWithBasicEffect(Mesh mesh, Matrix world, Camera camera)
@@ -43,8 +43,6 @@ namespace GameBaseLibrary
                 foreach (BasicEffect effect in modelMesh.Effects)
                 {
                     effect.DiffuseColor = backColor;
-                    //effect.EnableDefaultLighting();
-                    //effect.PreferPerPixelLighting = true;
                     effect.World = world;
                     effect.View = camera.View;
                     effect.Projection = camera.Projection;
@@ -53,7 +51,7 @@ namespace GameBaseLibrary
             }
         }
 
-        private void DrawWithCustomEffect(Mesh mesh, Matrix world, Camera camera, Light light, RenderTarget2D renderTarget, bool castShadows)
+        private void DrawWithCustomEffect(Mesh mesh, Matrix world, Camera camera, Light light, bool isToonRendering, RenderTarget2D renderTarget, bool castShadows)
         {
             string techniqueName = castShadows ? "CreateShadowMap" : "DrawWithShadowMap";
 
@@ -68,6 +66,7 @@ namespace GameBaseLibrary
                     effect.Parameters["Projection"].SetValue(camera.Projection);
                     effect.Parameters["LightDirection"].SetValue(light.direction);
                     effect.Parameters["LightViewProj"].SetValue(light.viewProjection);
+                    effect.Parameters["isToonRendering"].SetValue(isToonRendering);
 
                     Matrix worldInverseTransposeMatrix = Matrix.Transpose(Matrix.Invert(world));
                     effect.Parameters["WorldInverseTranspose"].SetValue(worldInverseTransposeMatrix);

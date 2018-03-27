@@ -46,7 +46,8 @@ namespace ShaderDemo
         Texture2D noiseTexture;
 
         int switching = 0;
-        const int max = 5;
+        const int max = 6;
+        bool isToonRendering = true;
 
         public Game1()
         {
@@ -156,6 +157,11 @@ namespace ShaderDemo
                 switching++;
                 if (switching > max)
                     switching = 0;
+
+                if (switching == 6)
+                    isToonRendering = false;
+                else
+                    isToonRendering = true;
             }
 
             mainCamera.Update(gameTime);
@@ -177,10 +183,10 @@ namespace ShaderDemo
 
             GraphicsDevice.SetRenderTarget(postEffectRenderTarget);
 
-            sphereModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
-            planeModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
-            cylinderModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
-            skyBoxModel.Draw(mainCamera.Camera, light, shadowRenderTarget, false);
+            sphereModel.Draw(mainCamera.Camera, light,isToonRendering, shadowRenderTarget, false);
+            planeModel.Draw(mainCamera.Camera, light, isToonRendering, shadowRenderTarget, false);
+            cylinderModel.Draw(mainCamera.Camera, light, isToonRendering, shadowRenderTarget, false);
+            skyBoxModel.Draw(mainCamera.Camera, light, isToonRendering, shadowRenderTarget, false);
 
             GraphicsDevice.SetRenderTarget(null);
 
@@ -207,6 +213,10 @@ namespace ShaderDemo
                     SetPostEffect("Noise");
                     break;
                 case 5:
+                    GraphicsDevice.Clear(Color.DimGray);
+                    SetPostEffect();
+                    break;
+                case 6:
                     GraphicsDevice.Clear(Color.DimGray);
                     SetPostEffect();
                     break;
@@ -293,8 +303,8 @@ namespace ShaderDemo
             GraphicsDevice.SetRenderTarget(shadowRenderTarget);
             GraphicsDevice.Clear(Color.White);
 
-            sphereModel.Draw(mainCamera.Camera, light);
-            cylinderModel.Draw(mainCamera.Camera, light);
+            sphereModel.Draw(mainCamera.Camera, light, isToonRendering);
+            cylinderModel.Draw(mainCamera.Camera, light, isToonRendering);
 
             //レンダーターゲットを再びバックバッファーに設定する
             GraphicsDevice.SetRenderTarget(null);

@@ -7,6 +7,8 @@ float3 LightDirection;
 
 float DepthBias = 0.0002f;
 
+bool isToonRendering = true;
+
 // TODO: ここでエフェクトのパラメーターを追加します。
 float4 AmbientColor = float4(1,1,1,1);
 float AmbientIntensity = 0.1;
@@ -117,21 +119,27 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
    bumpNormal = normalize(bumpNormal);
 
    float diffuseIntensity = dot(normalize(LightDirection), bumpNormal);
-   if(diffuseIntensity < 0.25)
-		diffuseIntensity = 0;
-   else if(diffuseIntensity > 0.75)
-        diffuseIntensity = 1;
-   else
-        diffuseIntensity = 0.5;
+   if(isToonRendering)
+   {
+	   if(diffuseIntensity < 0.25)
+		   diffuseIntensity = 0;
+	   else if(diffuseIntensity > 0.75)
+           diffuseIntensity = 1;
+	   else
+           diffuseIntensity = 0.5;
+   }
 
    float3 light = normalize(LightDirection);
    float3 r = normalize(2 * dot(light, bumpNormal) * bumpNormal - light);
    float3 v = normalize(mul(normalize(LightDirection), World));
    float dotProduct = dot(r, v);
-   if(dotProduct < 0.5)
-	dotProduct = 0.01;
-   else if(dotProduct > 0.75)
-    dotProduct = 1;
+   if(isToonRendering)
+   {
+	   if(dotProduct < 0.5)
+		   dotProduct = 0.01;
+	   else if(dotProduct > 0.75)
+		   dotProduct = 1;
+   }
 
    float4 specular = SpecularIntensity * SpecularColor * max(pow(dotProduct, Shininess), 0) * diffuseIntensity;
 
@@ -174,9 +182,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
    //このピクセルがシャドウマップで値の前にあるか後にあるかを調べる
    if(shadowDepth < ourDepth)
-		diffuse *= 1 - 0.75; //輝度を低くすることでピクセルをシャドウする
+		diffuse *= 0.25; //輝度を低くすることでピクセルをシャドウする
    
-   diffuse.a = 1;
+   diffuse.a = 0.95;
 
    return diffuse;
 }

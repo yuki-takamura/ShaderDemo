@@ -36,9 +36,9 @@ namespace GameBaseLibrary
             }
         }
 
-        public void Draw(Camera camera, Light light, RenderTarget2D renderTarget = null, bool castShadows = true)
+        public void Draw(Camera camera, Light light, bool isToonRendering, RenderTarget2D renderTarget = null, bool castShadows = true)
         {
-            render.Draw(mesh, transform.World, camera, light, renderTarget, castShadows);
+            render.Draw(mesh, transform.World, camera, light, isToonRendering, renderTarget, castShadows);
         }
     }
 }
