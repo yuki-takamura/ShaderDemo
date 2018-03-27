@@ -86,6 +86,15 @@ float4 SketchEffect2(PixelShader_Input p) : COLOR0
 	col += tex2D(Sampler, float2(p.TexCoord.x - blur, p.TexCoord.y - blur2));
 	col *= 0.3333f;
 
+	//色収差
+	blur = 0.002;
+	float4 col2 = tex2D(Sampler, p.TexCoord.xy - blur);
+	col2.g = 1;
+	float4 col3 = tex2D(Sampler, p.TexCoord.xy + blur);
+	col3.r = 1;
+	//col += col2 + col3;
+	//col *= 0.3333f;
+
 	//シーンの色を調整して、非常に暗い値を削除し、コントラストを上げる
 	float3 saturatedScene = saturate((col - SketchThreshold) * 2);
 
