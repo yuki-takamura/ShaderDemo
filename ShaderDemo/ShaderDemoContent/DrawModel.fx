@@ -170,7 +170,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 		shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord - float2(0.0001, 0)).r;
 		shadowDepth += tex2D(ShadowMapSampler, ShadowTexCoord - float2(0, 0.0001)).r;
    }
-   shadowDepth /= counter * 4 + 1;;
+   shadowDepth /= counter * 4 + 1;
 
    //現在のピクセル深度を計算する
    //バイアスは、オクルーダーのピクセルが描画されるときにおきる

@@ -115,8 +115,8 @@ namespace ShaderDemo
             light.direction = new Vector3(-0.3333333f, 0.6666667f, 0.6666667f);
 
             sketchTexture = Content.Load<Texture2D>("Canvas_N");
-            //noiseTexture = Content.Load<Texture2D>("DistortionTexture");
-            noiseTexture = Content.Load<Texture2D>("SketchTexture");
+            noiseTexture = Content.Load<Texture2D>("DistortionTexture");
+            //noiseTexture = Content.Load<Texture2D>("SketchTexture");
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace ShaderDemo
                     break;
                 case 1:
                     GraphicsDevice.Clear(Color.CadetBlue);
-                    SetPostEffect("Flip");
+                    SetPostEffect("Fringe");
                     break;
                 case 2:
                     GraphicsDevice.Clear(Color.DimGray);
