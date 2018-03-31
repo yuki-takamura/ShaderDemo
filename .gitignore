@@ -78,3 +78,43 @@ ShaderDemo/ShaderDemo/bin/x86/Debug/Content/GrassGreen.xnb
 ShaderDemo/ShaderDemo/bin/x86/Debug/Content/Cylinder.xnb
 *.xnb
 ShaderDemo/ShaderDemoContent/obj/x86/Debug/SkyBox_0.xml
+setup.exe
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/SkyBox.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/SketchTexture.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/PostProcessEffect.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/PostEffectMacro.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/GrassGreen.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/DrawModel.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/DistortionTexture.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/Diffuse_Blue.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/Cylinder.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/Canvas_N.xnb.deploy
+ShaderDemo/ShaderDemo/bin/x86/Debug/app.publish/Application Files/ShaderDemo_1_0_0_0/Content/CalculationMacro.xnb.deploy
+ShaderDemo.application
+Application Files/ShaderDemo_1_0_0_0/ja-JP/Microsoft.Xna.Framework.resources.dll.deploy
+Application Files/ShaderDemo_1_0_0_0/ja-JP/Microsoft.Xna.Framework.Game.resources.dll.deploy
+Application Files/ShaderDemo_1_0_0_0/ShaderDemo.exe.manifest
+Application Files/ShaderDemo_1_0_0_0/ShaderDemo.exe.deploy
+Application Files/ShaderDemo_1_0_0_0/ShaderDemo.application
+Application Files/ShaderDemo_1_0_0_0/GameThumbnail.png.deploy
+Application Files/ShaderDemo_1_0_0_0/GameBaseLibrary.dll.deploy
+Application Files/ShaderDemo_1_0_0_0/Game.ico.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/takapyon.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Torus.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Tile_N.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Tile.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Sphere.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/SkyBox.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/SketchTexture.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/PostProcessEffect.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/PostEffectMacro.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Plane.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/NormalMap.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/GrassGreen.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/DrawModel.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/DistortionTexture.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Diffuse_Blue.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/DiffuseMap.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Cylinder.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/Canvas_N.xnb.deploy
+Application Files/ShaderDemo_1_0_0_0/Content/CalculationMacro.xnb.deploy
